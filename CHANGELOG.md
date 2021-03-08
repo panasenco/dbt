@@ -32,6 +32,7 @@
 - Add a new materialization for tests, update data tests to use test materialization when executing. ([#3154](https://github.com/fishtown-analytics/dbt/issues/3154), [#3181](https://github.com/fishtown-analytics/dbt/pull/3181))
 - Switch from externally storing parsing state in ParseResult object to using Manifest ([#3163](http://github.com/fishtown-analytics/dbt/issues/3163), [#3219](https://github.com/fishtown-analytics/dbt/pull/3219))
 - Switch from loading project files in separate parsers to loading in one place([#3244](http://github.com/fishtown-analytics/dbt/issues/3244), [#3248](https://github.com/fishtown-analytics/dbt/pull/3248))
+- Use shutil.which so Windows can pick up git.bat as a git executable ([#3035](https://github.com/fishtown-analytics/dbt/issues/3035), [#3134](https://github.com/fishtown-analytics/dbt/issues/3134))
 
 Contributors:
 - [@yu-iskw](https://github.com/yu-iskw) ([#2928](https://github.com/fishtown-analytics/dbt/pull/2928))
@@ -49,6 +50,7 @@ Contributors:
 - [@cgopalan](https://github.com/cgopalan) ([#3165](https://github.com/fishtown-analytics/dbt/pull/3165), [#3182](https://github.com/fishtown-analytics/dbt/pull/3182))
 - [@fux](https://github.com/fuchsst) ([#3241](https://github.com/fishtown-analytics/dbt/issues/3241))
 - [@dmateusp](https://github.com/dmateusp) ([#3270](https://github.com/fishtown-analytics/dbt/pull/3270))
+- [@majidaldo](https://github.com/majidaldo) ([#3134](https://github.com/fishtown-analytics/dbt/issues/3134))
 
 ## dbt 0.19.1 (March 31, 2021)
 
