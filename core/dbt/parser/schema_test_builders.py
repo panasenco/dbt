@@ -13,7 +13,7 @@ from dbt.contracts.graph.unparsed import (
     UnparsedAnalysisUpdate,
     UnparsedMacroUpdate,
     UnparsedNodeUpdate,
-    UnparsedExposure,
+    UnparsedExposure, UnparsedTestUpdate,
 )
 from dbt.exceptions import raise_compiler_error
 from dbt.parser.search import FileBlock
@@ -80,6 +80,7 @@ Target = TypeVar(
     'Target',
     UnparsedNodeUpdate,
     UnparsedMacroUpdate,
+    UnparsedTestUpdate,
     UnparsedAnalysisUpdate,
     UnpatchedSourceDefinition,
     UnparsedExposure,

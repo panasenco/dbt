@@ -431,6 +431,8 @@ class ManifestLoader:
         process_sources(self.manifest, project_name)
         process_refs(self.manifest, project_name)
         process_docs(self.manifest, self.root_project)
+        # TODO(kw) maybe process tests and test descriptions here?
+        process_tests(self.manifest)
 
     def update_manifest(self) -> Manifest:
         start_patch = time.perf_counter()
@@ -456,6 +458,7 @@ class ManifestLoader:
         # do the node and macro patches
         self.manifest.patch_nodes()
         self.manifest.patch_macros()
+        self.manifest.patch_tests()
 
         # process_manifest updates the refs, sources, and docs
         start_process = time.perf_counter()
@@ -755,6 +758,11 @@ def process_docs(manifest: Manifest, config: RuntimeConfig):
             manifest,
             config.project_name,
         )
+        if node.resource_type == NodeType.Test:
+            if node.test_metadata is not None:
+                ctx['column_name'] = node.test_metadata.to_dict()['kwargs']['column_name']
+            if len(node.refs) and len(node.refs[0]):
+                ctx['model_name'] = node.refs[0][0]
         _process_docs_for_node(ctx, node)
     for source in manifest.sources.values():
         ctx = generate_runtime_docs(
@@ -780,6 +788,10 @@ def process_docs(manifest: Manifest, config: RuntimeConfig):
             config.project_name,
         )
         _process_docs_for_exposure(ctx, exposure)
+
+
+def process_tests(manifest: Manifest):
+    pass
 
 
 def _process_refs_for_exposure(
@@ -856,7 +868,6 @@ def _process_refs_for_node(
                 node, target_model_name, target_model_package,
                 disabled=(isinstance(target_model, Disabled))
             )
-
             continue
 
         target_model_id = target_model.unique_id

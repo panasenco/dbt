@@ -20,7 +20,7 @@ from dbt.dataclass_schema import (
 from dbt.clients.system import write_file
 from dbt.contracts.files import FileHash, MAXIMUM_SEED_SIZE_NAME
 from dbt.contracts.graph.unparsed import (
-    UnparsedNode, UnparsedDocumentation, Quoting, Docs,
+    TestArgument, UnparsedNode, UnparsedDocumentation, Quoting, Docs,
     UnparsedBaseNode, FreshnessThreshold, ExternalTable,
     HasYamlMetadata, MacroArgument, UnparsedSourceDefinition,
     UnparsedSourceTableDefinition, UnparsedColumn, TestDef,
@@ -428,6 +428,12 @@ class ParsedMacroPatch(ParsedPatch):
 
 
 @dataclass
+class ParsedTestPatch(ParsedPatch):
+    columns: Dict[str, ColumnInfo]
+    arguments: List[TestArgument] = field(default_factory=list)
+
+
+@dataclass
 class ParsedMacro(UnparsedBaseNode, HasUniqueID):
     name: str
     macro_sql: str
@@ -440,12 +446,12 @@ class ParsedMacro(UnparsedBaseNode, HasUniqueID):
     meta: Dict[str, Any] = field(default_factory=dict)
     docs: Docs = field(default_factory=Docs)
     patch_path: Optional[str] = None
-    arguments: List[MacroArgument] = field(default_factory=list)
+    arguments: List[Union[MacroArgument, TestArgument]] = field(default_factory=list)
 
     def local_vars(self):
         return {}
 
-    def patch(self, patch: ParsedMacroPatch):
+    def patch(self, patch: Union[ParsedMacroPatch, ParsedTestPatch]):
         self.patch_path: Optional[str] = patch.original_file_path
         self.description = patch.description
         self.meta = patch.meta

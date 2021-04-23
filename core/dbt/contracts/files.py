@@ -7,7 +7,7 @@ from dbt.dataclass_schema import dbtClassMixin, StrEnum
 
 from dbt.exceptions import InternalException
 
-from .util import MacroKey, SourceKey
+from .util import MacroKey, SourceKey, TestKey
 
 
 MAXIMUM_SEED_SIZE = 1 * 1024 * 1024
@@ -142,6 +142,7 @@ class SourceFile(dbtClassMixin):
     patches: List[str] = field(default_factory=list)
     # any macro patches in this file. The entries are package, name pairs.
     macro_patches: List[MacroKey] = field(default_factory=list)
+    test_patches: List[TestKey] = field(default_factory=list)
     # any source patches in this file. The entries are package, name pairs
     source_patches: List[SourceKey] = field(default_factory=list)
 

@@ -15,13 +15,13 @@ from dbt.contracts.graph.compiled import (
 )
 from dbt.contracts.graph.parsed import (
     ParsedMacro, ParsedDocumentation, ParsedNodePatch, ParsedMacroPatch,
-    ParsedSourceDefinition, ParsedExposure, HasUniqueID,
+    ParsedSourceDefinition, ParsedExposure, HasUniqueID, ParsedTestPatch,
     UnpatchedSourceDefinition, ManifestNodes
 )
 from dbt.contracts.graph.unparsed import SourcePatch
 from dbt.contracts.files import SourceFile, FileHash, RemoteFile
 from dbt.contracts.util import (
-    BaseArtifactMetadata, MacroKey, SourceKey, ArtifactMixin, schema_version
+    BaseArtifactMetadata, MacroKey, SourceKey, TestKey, ArtifactMixin, schema_version
 )
 from dbt.dataclass_schema import dbtClassMixin
 from dbt.exceptions import (
@@ -417,7 +417,7 @@ T = TypeVar('T', bound=GraphMemberNode)
 
 def _update_into(dest: MutableMapping[str, T], new_item: T):
     """Update dest to overwrite whatever is at dest[new_item.unique_id] with
-    new_itme. There must be an existing value to overwrite, and they two nodes
+    new_item. There must be an existing value to overwrite, and they two nodes
     must have the same original file path.
     """
     unique_id = new_item.unique_id
@@ -539,6 +539,7 @@ class Manifest(MacroMethods):
     state_check: Optional[ManifestStateCheck] = None
     # Moved from the ParseResult object
     macro_patches: MutableMapping[MacroKey, ParsedMacroPatch] = field(default_factory=dict)
+    test_patches: MutableMapping[TestKey, ParsedTestPatch] = field(default_factory=dict)
     patches: MutableMapping[str, ParsedNodePatch] = field(default_factory=dict)
     source_patches: MutableMapping[SourceKey, SourcePatch] = field(default_factory=dict)
     # following is from ParseResult
@@ -692,6 +693,15 @@ class Manifest(MacroMethods):
         self.macro_patches[key] = patch
         self.get_file(source_file).macro_patches.append(key)
 
+    def add_test_patch(
+        self, source_file: SourceFile, patch: ParsedTestPatch,
+    ) -> None:
+        key = (patch.package_name, patch.name)
+        # if key in self.macro_patches:
+        #     raise_duplicate_macro_patch_name(patch, self.macro_patches[key])
+        self.test_patches[key] = patch
+        self.get_file(source_file).test_patches.append(key)
+
     def add_source_patch(
         self, source_file: SourceFile, patch: SourcePatch,
     ) -> None:
@@ -711,6 +721,22 @@ class Manifest(MacroMethods):
             macro.patch(patch)
 
         if self.macro_patches:
+            for patch in self.macro_patches.values():
+                warn_or_error(
+                    f'WARNING: Found documentation for macro "{patch.name}" '
+                    f'which was not found'
+                )
+
+    def patch_tests(self) -> None:
+        tests = [node for node in self.nodes.values() if node.resource_type == NodeType.Test]
+        for test in tests:
+            key = (test.package_name, test.test_metadata.name)
+            patch = self.test_patches.pop(key, None)
+            if not patch:
+                continue
+            test.patch(patch)
+
+        if self.test_patches:
             for patch in self.macro_patches.values():
                 warn_or_error(
                     f'WARNING: Found documentation for macro "{patch.name}" '
@@ -745,7 +771,6 @@ class Manifest(MacroMethods):
                     raise_invalid_patch(
                         node, patch.yaml_key, patch.original_file_path
                     )
-
             node.patch(patch)
 
         # If anything is left in self.patches, it means that the node for

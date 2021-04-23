@@ -133,11 +133,17 @@ class MacroArgument(dbtClassMixin):
     type: Optional[str] = None
     description: str = ''
 
-
 @dataclass
 class UnparsedMacroUpdate(HasDocs, HasYamlMetadata):
     arguments: List[MacroArgument] = field(default_factory=list)
 
+@dataclass
+class TestArgument(MacroArgument):
+    pass
+
+@dataclass
+class UnparsedTestUpdate(UnparsedMacroUpdate):
+    arguments: List[TestArgument] = field(default_factory=list)
 
 class TimePeriod(StrEnum):
     minute = 'minute'

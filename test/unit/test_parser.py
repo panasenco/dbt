@@ -202,6 +202,9 @@ models:
                 values: ['red', 'blue', 'green']
             - foreign_package.test_case:
                 arg: 100
+tests:
+    - name: not_null
+      description: testing not null
 '''
 
 
@@ -436,6 +439,7 @@ class SchemaParserModelsTest(SchemaParserTest):
         self.assertEqual(tests[2].fqn, ['snowplow', 'schema_test', tests[2].name])
         self.assertEqual(tests[2].unique_id.split('.'), ['test', 'snowplow', tests[2].name])
         self.assertEqual(tests[2].test_metadata.name, 'not_null')
+        self.assertEqual(tests[2].description, 'test not null description')
         self.assertIsNone(tests[2].test_metadata.namespace)
         self.assertEqual(
             tests[2].test_metadata.kwargs,

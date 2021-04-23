@@ -11,7 +11,7 @@ from dbt.contracts.graph.compiled import CompileResultNode
 from dbt.contracts.graph.manifest import Manifest
 from dbt.contracts.graph.parsed import ParsedMacro
 
-from dbt.context.base import contextmember
+from dbt.context.base import contextmember, contextproperty
 from dbt.context.configured import SchemaYamlContext
 
 
@@ -26,6 +26,10 @@ class DocsRuntimeContext(SchemaYamlContext):
         super().__init__(config, current_project)
         self.node = node
         self.manifest = manifest
+
+    @contextproperty
+    def model_name(self) -> str:
+        return self.node.name
 
     @contextmember
     def doc(self, *args: str) -> str:
