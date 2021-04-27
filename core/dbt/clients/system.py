@@ -407,10 +407,6 @@ def run_cmd(
     logger.debug('Executing "{}"'.format(' '.join(cmd)))
     if len(cmd) == 0:
         raise dbt.exceptions.CommandError(cwd, cmd)
-    exe_pth = shutil.which(cmd[0])
-    if not exe_pth:
-        raise dbt.exceptions.ExecutableError(cwd, cmd, f"Executable for {cmd[0]} not found.")
-    cmd = [os.path.abspath(exe_pth)] + list(cmd[1:])
 
     # the env argument replaces the environment entirely, which has exciting
     # consequences on Windows! Do an update instead.
@@ -420,6 +416,9 @@ def run_cmd(
         full_env.update(env)
 
     try:
+        exe_pth = shutil.which(cmd[0])
+        if exe_pth:
+            cmd = [os.path.abspath(exe_pth)] + list(cmd[1:])
         proc = subprocess.Popen(
             cmd,
             cwd=cwd,
