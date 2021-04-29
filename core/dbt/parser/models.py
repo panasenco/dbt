@@ -27,17 +27,18 @@ class ModelParser(SimpleSQLParser[ParsedModelNode]):
     ) -> None:
         # run dbt-jinja extractor (powered by tree-sitter)
         res = extract_from_source(node.raw_sql)
-        # if it didn't return an exception, fit the refs, sources, and configs
+        # if it doesn't need python jinja, fit the refs, sources, and configs
         # into the node. Down the line the rest of the node will be updated with
         # this information. (e.g. depends_on etc.)
-        if not isinstance(res, Exception):
-            for ref in res['refs']:
-                node.refs.append(ref)
-            for source in res['sources']:
+        if not res['python_jinja']:
+            # TODO just append the two lists together instead of iterating
+            for refv in res['refs']:
+                node.refs.append(refv)
+            for sourcev in res['sources']:
                 # TODO change extractor to match type here
-                node.sources.append([source[0], source[1]])
-            for config in res['configs']:
-                node.config[config[0]] = config[1]
+                node.sources.append([sourcev[0], sourcev[1]])
+            for configv in res['configs']:
+                node.config[configv[0]] = configv[1]
 
             # TODO is this line necessary? not even sure what it does.
             self.update_parsed_node(node, config)
