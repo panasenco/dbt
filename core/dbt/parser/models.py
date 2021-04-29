@@ -42,6 +42,9 @@ class ModelParser(SimpleSQLParser[ParsedModelNode]):
 
             # if the extracted configs have any of the special ones,
             # this will merge them into node.config
-            self.update_parsed_node_config(node, res['configs'])
+            self.update_parsed_node_config(node, dict(res['configs']))
+
+            # TODO this is probably wrong
+            node.unrendered_config = dict(res['configs'])
         else: 
             super().render_update(node, config)
