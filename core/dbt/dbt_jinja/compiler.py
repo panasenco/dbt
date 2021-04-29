@@ -5,7 +5,7 @@ from tree_sitter import Language, Parser  # type: ignore
 
 
 # global values
-JINJA2_LANGUAGE = Language('./build/dbtjinja.so', 'dbt_jinja')
+JINJA2_LANGUAGE = Language('./core/dbt/dbt_jinja/build/dbtjinja.so', 'dbt_jinja')
 parser = Parser()
 parser.set_language(JINJA2_LANGUAGE)
 
