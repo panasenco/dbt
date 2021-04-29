@@ -1,7 +1,7 @@
 from dataclasses import dataclass
 from functools import reduce
 from itertools import dropwhile
-from tree_sitter import Language, Parser
+from tree_sitter import Language, Parser # type: ignore
 
 
 Language.build_library(
