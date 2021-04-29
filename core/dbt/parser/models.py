@@ -1,3 +1,4 @@
+from dbt.clients.jinja import get_rendered
 from dbt.context.context_config import ContextConfig
 from dbt.contracts.graph.parsed import ParsedModelNode
 from dbt.dataclass_schema import ValidationError
@@ -27,20 +28,20 @@ class ModelParser(SimpleSQLParser[ParsedModelNode]):
     ) -> None:
         # run dbt-jinja extractor (powered by tree-sitter)
         res = extract_from_source(node.raw_sql)
+
         # if it doesn't need python jinja, fit the refs, sources, and configs
         # into the node. Down the line the rest of the node will be updated with
         # this information. (e.g. depends_on etc.)
         if not res['python_jinja']:
-            # TODO just append the two lists together instead of iterating
-            for refv in res['refs']:
-                node.refs.append(refv)
+            node.refs = node.refs + res['refs']
             for sourcev in res['sources']:
                 # TODO change extractor to match type here
                 node.sources.append([sourcev[0], sourcev[1]])
             for configv in res['configs']:
                 node.config[configv[0]] = configv[1]
 
-            # TODO is this line necessary? not even sure what it does.
-            self.update_parsed_node(node, config)
+            # if the extracted configs have any of the special ones,
+            # this will merge them into node.config
+            self.update_parsed_node_config(node, res['configs'])
         else: 
             super().render_update(node, config)
