@@ -1,9 +1,6 @@
-from dbt.clients.jinja import get_rendered
 from dbt.context.context_config import ContextConfig
 from dbt.contracts.graph.parsed import ParsedModelNode
-from dbt.dataclass_schema import ValidationError
 from dbt.dbt_jinja.compiler import extract_from_source
-from dbt.exceptions import CompilationException
 from dbt.node_types import NodeType
 from dbt.parser.base import IntermediateNode, SimpleSQLParser
 from dbt.parser.search import FileBlock
@@ -46,5 +43,5 @@ class ModelParser(SimpleSQLParser[ParsedModelNode]):
 
             # TODO this is probably wrong
             node.unrendered_config = dict(res['configs'])
-        else: 
+        else:
             super().render_update(node, config)
