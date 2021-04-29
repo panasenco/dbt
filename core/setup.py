@@ -73,6 +73,7 @@ setup(
         'hologram==0.0.14',
         'logbook>=1.5,<1.6',
         'mashumaro==2.0',
+        'tree-sitter==0.19.0',
         'typing-extensions>=3.7.4,<3.8',
         # the following are all to match snowflake-connector-python
         'requests<3.0.0',
