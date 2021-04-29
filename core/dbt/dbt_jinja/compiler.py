@@ -1,18 +1,8 @@
 from dataclasses import dataclass
 from functools import reduce
 from itertools import dropwhile
-from tree_sitter import Language, Parser # type: ignore
+from tree_sitter import Language, Parser  # type: ignore
 
-
-Language.build_library(
-    # Store the library in the `build` directory
-    './build/dbtjinja.so',
-
-    # Include one or more languages
-    [
-        './tree-sitter-dbt-jinja',
-    ]
-)
 
 # global values
 JINJA2_LANGUAGE = Language('./build/dbtjinja.so', 'dbt_jinja')
