@@ -144,19 +144,21 @@ def _to_typed(source_bytes, node):
             for arg in args:
                 if arg.type != 'kwarg' and arg.type != 'lit_string':
                     raise TypeCheckFailure(f"unexpected argument type in source. Found {arg.type}")
-            # note: keword vs positional argument order is checked above in fn_call checks
-            key_name_0 = text_from_node(source_bytes, args[0].child_by_field_name('key'))
-            key_name_1 = text_from_node(source_bytes, args[1].child_by_field_name('key'))
-            if args[0].type == 'kwarg' and key_name_0 != 'source_name':
-                raise TypeCheckFailure(
-                    "first keyword argument in source must be source_name found"
-                    f"{args[0].child_by_field_name('key')}"
-                )
-            if args[1].type == 'kwarg' and key_name_1 != 'table_name':
-                raise TypeCheckFailure(
-                    "second keyword argument in source must be table_name found"
-                    f"{args[1].child_by_field_name('key')}"
-                )
+            # note: keyword vs positional argument order is checked above in fn_call checks
+            if args[0].type == 'kwarg':
+                key_name = text_from_node(source_bytes, args[0].child_by_field_name('key'))
+                if key_name != 'source_name':
+                    raise TypeCheckFailure(
+                        "first keyword argument in source must be source_name found"
+                        f"{args[0].child_by_field_name('key')}"
+                    )
+            if args[1].type == 'kwarg':
+                key_name = text_from_node(source_bytes, args[1].child_by_field_name('key'))
+                if key_name != 'table_name':
+                    raise TypeCheckFailure(
+                        "second keyword argument in source must be table_name found"
+                        f"{args[1].child_by_field_name('key')}"
+                    )
 
             # restructure source calls to look like they
             # were all called positionally for uniformity
