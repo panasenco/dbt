@@ -25,26 +25,32 @@ class ModelParser(SimpleSQLParser[ParsedModelNode]):
     ) -> None:
         # run dbt-jinja extractor (powered by tree-sitter)
         res = extract_from_source(node.raw_sql)
-        # TODO remove debug line:
-        if "select * from {{ target.schema }}.seed" in node.raw_sql :
-            print(res)
 
         # if it doesn't need python jinja, fit the refs, sources, and configs
         # into the node. Down the line the rest of the node will be updated with
         # this information. (e.g. depends_on etc.)
         if not res['python_jinja']:
+
+            config_calls = []
+            for c in res['configs']:
+                config_calls.append({c[0]: c[1]})
+
+            config._config_calls = config_calls
+
+            # this uses the updated config to set all the right things in the node
+            # if there are hooks present, it WILL render jinja. Will need to change when we support hooks
+            self.update_parsed_node(node, config)
+
+            # manually set the unrendered config TODO this is probably wrong
+            node.unrendered_config = dict(res['configs'])
+
+            # TODO probably better way to do this.
             node.refs = node.refs + res['refs']
             for sourcev in res['sources']:
                 # TODO change extractor to match type here
                 node.sources.append([sourcev[0], sourcev[1]])
             for configv in res['configs']:
                 node.config[configv[0]] = configv[1]
-
-            # if the extracted configs have any of the special ones,
-            # this will merge them into node.config
-            self.update_parsed_node_config(node, dict(res['configs']))
-
-            # TODO this is probably wrong
-            node.unrendered_config = dict(res['configs'])
+            
         else:
             super().render_update(node, config)
