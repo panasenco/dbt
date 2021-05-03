@@ -25,6 +25,9 @@ class ModelParser(SimpleSQLParser[ParsedModelNode]):
     ) -> None:
         # run dbt-jinja extractor (powered by tree-sitter)
         res = extract_from_source(node.raw_sql)
+        # TODO remove debug line:
+        if "select * from {{ target.schema }}.seed" in node.raw_sql :
+            print(res)
 
         # if it doesn't need python jinja, fit the refs, sources, and configs
         # into the node. Down the line the rest of the node will be updated with
