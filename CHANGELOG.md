@@ -2,17 +2,18 @@
 
 ### Fixes
 - Fix compiled sql for ephemeral models ([#3317](https://github.com/fishtown-analytics/dbt/issues/3317), [#3318](https://github.com/fishtown-analytics/dbt/pull/3318))
+- Now generating `run_results.json` even when no nodes are selected ([#3313](https://github.com/fishtown-analytics/dbt/issues/3313), [#3315](https://github.com/fishtown-analytics/dbt/pull/3315))
 
 ### Under the hood
-- Added logic for registry requests to raise a timeout error after a response hangs out for 30 seconds and 5 attempts have been made to reach the endpoint ([#3117](https://github.com/fishtown-analytics/dbt/issues/3177))
+- Added logic for registry requests to raise a timeout error after a response hangs out for 30 seconds and 5 attempts have been made to reach the endpoint ([#3177](https://github.com/fishtown-analytics/dbt/issues/3177), [#3275](https://github.com/fishtown-analytics/dbt/pull/3275))
 
 Contributors:
-- [@TeddyCr](https://github.com/TeddyCr) ([#3117](https://github.com/fishtown-analytics/dbt/issues/3177))
+- [@TeddyCr](https://github.com/TeddyCr) ([#3275](https://github.com/fishtown-analytics/dbt/pull/3275))
+- [@panasenco](https://github.com/panasenco) ([#3315](https://github.com/fishtown-analytics/dbt/pull/3315))
 
 ## dbt 0.20.0b1 (May 03, 2021)
 
 ### Fixes
-- Now generating a manifest and a run_results.json even when no nodes are selected ([#3313](https://github.com/fishtown-analytics/dbt/issues/3313))
 - Fix exit code from dbt debug not returning a failure when one of the tests fail ([#3017](https://github.com/fishtown-analytics/dbt/issues/3017))
 - Auto-generated CTEs in tests and ephemeral models have lowercase names to comply with dbt coding conventions ([#3027](https://github.com/fishtown-analytics/dbt/issues/3027), [#3028](https://github.com/fishtown-analytics/dbt/issues/3028))
 - Fix incorrect error message when a selector does not match any node [#3036](https://github.com/fishtown-analytics/dbt/issues/3036))
